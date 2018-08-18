@@ -3205,6 +3205,9 @@ static int menu_displaylist_parse_options_cheats(
          MENU_ENUM_LABEL_CHEAT_DELETE_ALL,
          MENU_SETTING_ACTION, 0, 0);
    menu_displaylist_parse_settings_enum(menu, info,
+         MENU_ENUM_LABEL_CHEAT_APPLY_AFTER_LOAD,
+         PARSE_ONLY_BOOL, false);
+   menu_displaylist_parse_settings_enum(menu, info,
          MENU_ENUM_LABEL_CHEAT_APPLY_AFTER_TOGGLE,
          PARSE_ONLY_BOOL, false);
    menu_entries_append_enum(info->list,
@@ -5134,6 +5137,9 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type, void *data)
          menu_displaylist_parse_settings_enum(menu, info,
                MENU_ENUM_LABEL_SLOWMOTION_RATIO,
                PARSE_ONLY_FLOAT, false);
+         menu_displaylist_parse_settings_enum(menu, info,
+               MENU_ENUM_LABEL_VRR_RUNLOOP_ENABLE,
+               PARSE_ONLY_BOOL, false);
 
          {
             settings_t      *settings     = config_get_ptr();
@@ -5245,7 +5251,7 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type, void *data)
                   PARSE_ONLY_UINT, false);
          }
 
-         //<Inspect Memory At this Address>
+         /* Inspect Memory At this Address */
 
          menu_entries_append_enum(info->list,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_CHEAT_ADD_NEW_AFTER),
@@ -5370,13 +5376,13 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type, void *data)
 
 
          setting = menu_setting_find(msg_hash_to_str(MENU_ENUM_LABEL_CHEAT_DELETE_MATCH));
-         if ( setting )
+         if (setting)
             setting->max = cheat_manager_state.num_matches-1;
          setting = menu_setting_find(msg_hash_to_str(MENU_ENUM_LABEL_CHEAT_COPY_MATCH));
-         if ( setting )
+         if (setting)
             setting->max = cheat_manager_state.num_matches-1;
          setting = menu_setting_find(msg_hash_to_str(MENU_ENUM_LABEL_CHEAT_BROWSE_MEMORY));
-         if ( setting )
+         if (setting)
             setting->max = cheat_manager_state.actual_memory_size>0?cheat_manager_state.actual_memory_size-1:0 ;
 
          info->need_refresh = true;
@@ -7034,7 +7040,7 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type, void *data)
 
             if (system)
             {
-               if ( !string_is_empty(system->info.library_name) &&
+               if (!string_is_empty(system->info.library_name) &&
                      !string_is_equal(system->info.library_name,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NO_CORE)))
                   menu_displaylist_parse_settings_enum(menu, info,

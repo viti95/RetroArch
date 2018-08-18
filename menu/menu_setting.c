@@ -3323,10 +3323,25 @@ static bool setting_append_list(
 
          CONFIG_BOOL(
                list, list_info,
+               &settings->bools.apply_cheats_after_load,
+               MENU_ENUM_LABEL_CHEAT_APPLY_AFTER_LOAD,
+               MENU_ENUM_LABEL_VALUE_CHEAT_APPLY_AFTER_LOAD,
+               apply_cheats_after_load,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_CMD_APPLY_AUTO);
+
+         CONFIG_BOOL(
+               list, list_info,
                &settings->bools.apply_cheats_after_toggle,
                MENU_ENUM_LABEL_CHEAT_APPLY_AFTER_TOGGLE,
                MENU_ENUM_LABEL_VALUE_CHEAT_APPLY_AFTER_TOGGLE,
-               rewind_enable,
+               apply_cheats_after_toggle,
                MENU_ENUM_LABEL_VALUE_OFF,
                MENU_ENUM_LABEL_VALUE_ON,
                &group_info,
@@ -5376,6 +5391,22 @@ static bool setting_append_list(
                general_read_handler);
          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_SET_FRAME_LIMIT);
          menu_settings_list_current_add_range(list, list_info, 0, 10, 1.0, true, true);
+
+         CONFIG_BOOL(
+               list, list_info,
+               &settings->bools.vrr_runloop_enable,
+               MENU_ENUM_LABEL_VRR_RUNLOOP_ENABLE,
+               MENU_ENUM_LABEL_VALUE_VRR_RUNLOOP_ENABLE,
+               false,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE
+               );
 
          CONFIG_FLOAT(
                list, list_info,

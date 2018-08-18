@@ -88,7 +88,7 @@ enum
    ACTION_OK_SET_PATH_VIDEO_FILTER,
    ACTION_OK_SET_PATH_OVERLAY,
    ACTION_OK_SET_DIRECTORY,
-   ACTION_OK_LOAD_CHEAT_FILE_APPEND,
+   ACTION_OK_LOAD_CHEAT_FILE_APPEND
 };
 
 enum
@@ -993,7 +993,7 @@ static bool menu_content_playlist_load(playlist_t *playlist, size_t idx)
       path_check = (char *)
          calloc(strlen(path_tolower) + 1, sizeof(char));
 
-      strncpy(path_check, path, strlen(path_tolower));
+      strlcpy(path_check, path, strlen(path_tolower) + 1);
 
       valid_path = path_is_valid(path_check);
 
@@ -1409,7 +1409,9 @@ static int generic_action_ok(const char *path,
          break;
       case ACTION_OK_LOAD_CHEAT_FILE_APPEND:
          flush_char = msg_hash_to_str(flush_id);
-         //cheat_manager_free();
+#if 0
+         cheat_manager_free();
+#endif
 
          if (!cheat_manager_load(action_path,true))
             goto error;

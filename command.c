@@ -1,4 +1,4 @@
-/*  RetroArch - A frontend for libretro.
+﻿/*  RetroArch - A frontend for libretro.
  *  Copyright (C) 2011-2017 - Daniel De Matteis
  *  Copyright (C) 2015-2017 - Andrés Suárez
  *  Copyright (C) 2016-2017 - Brad Parker
@@ -234,9 +234,11 @@ bool command_set_shader(const char *arg)
 {
    char msg[256];
    bool is_preset                  = false;
-   struct video_shader    *shader  = menu_shader_get();
    enum rarch_shader_type     type = video_shader_get_type_from_ext(
          path_get_extension(arg), &is_preset);
+#ifdef HAVE_MENU
+   struct video_shader    *shader  = menu_shader_get();
+#endif
 
    if (type == RARCH_SHADER_NONE)
       return false;
@@ -248,18 +250,23 @@ bool command_set_shader(const char *arg)
          arg);
 
    retroarch_set_shader_preset(arg);
+#ifdef HAVE_MENU
    return menu_shader_manager_set_preset(shader, type, arg);
+#else
+   return true;
+#endif
 }
 
 static bool command_version(const char* arg)
 {
-      char reply[256] = {0};
+   char reply[256] = {0};
 
-      sprintf(reply, "%s\n", PACKAGE_VERSION);
+   sprintf(reply, "%s\n", PACKAGE_VERSION);
 #if defined(HAVE_CHEEVOS) && (defined(HAVE_STDIN_CMD) || defined(HAVE_NETWORK_CMD) && defined(HAVE_NETWORKING))
-      command_reply(reply, strlen(reply));
+   command_reply(reply, strlen(reply));
 #endif
-      return true;
+
+   return true;
 }
 
 #if defined(HAVE_COMMAND) && defined(HAVE_CHEEVOS)
@@ -332,6 +339,7 @@ static bool command_write_ram(const char *arg)
 }
 #endif
 
+#ifdef HAVE_COMMAND
 static bool command_get_arg(const char *tok,
       const char **arg, unsigned *index)
 {
@@ -372,6 +380,7 @@ static bool command_get_arg(const char *tok,
 
    return false;
 }
+#endif
 
 #if defined(HAVE_NETWORKING) && defined(HAVE_NETWORK_CMD) && defined(HAVE_COMMAND)
 static bool command_network_init(command_t *handle, uint16_t port)
@@ -552,10 +561,10 @@ bool command_network_send(const char *cmd_)
    }
    free(command);
 
-   return ret;
-#else
-   return false;
+   if (ret)
+      return true;
 #endif
+   return false;
 }
 
 #ifdef HAVE_STDIN_CMD
@@ -1061,7 +1070,7 @@ static void command_event_init_controllers(void)
             break;
       }
 
-      if (set_controller && i < info->ports.size)
+      if (set_controller && info && i < info->ports.size)
       {
          pad.device     = device;
          pad.port       = i;
@@ -1093,7 +1102,8 @@ static void command_event_deinit_core(bool reinit)
 
 static void command_event_init_cheats(void)
 {
-   bool allow_cheats = true;
+   settings_t *settings          = config_get_ptr();
+   bool        allow_cheats      = true;
 
 #ifdef HAVE_NETWORKING
    allow_cheats &= !netplay_driver_ctl(
@@ -1106,7 +1116,10 @@ static void command_event_init_cheats(void)
 
    cheat_manager_alloc_if_empty() ;
    cheat_manager_load_game_specific_cheats() ;
-   /* TODO/FIXME - add some stuff here. */
+
+
+   if (settings != NULL && settings->bools.apply_cheats_after_load)
+      cheat_manager_apply_cheats();
 }
 
 static void command_event_load_auto_state(void)
@@ -1334,8 +1347,8 @@ static void command_event_restore_default_shader_preset(void)
 
 static void command_event_restore_remaps(void)
 {
-   if (rarch_ctl(RARCH_CTL_IS_REMAPS_CORE_ACTIVE, NULL) || 
-       rarch_ctl(RARCH_CTL_IS_REMAPS_CONTENT_DIR_ACTIVE, NULL) || 
+   if (rarch_ctl(RARCH_CTL_IS_REMAPS_CORE_ACTIVE, NULL) ||
+       rarch_ctl(RARCH_CTL_IS_REMAPS_CONTENT_DIR_ACTIVE, NULL) ||
        rarch_ctl(RARCH_CTL_IS_REMAPS_GAME_ACTIVE, NULL))
       input_remapping_set_defaults(true);
 }
@@ -1776,7 +1789,9 @@ void command_playlist_update_write(
  **/
 bool command_event(enum event_command cmd, void *data)
 {
+#ifdef HAVE_DISCORD
    static bool discord_inited = false;
+#endif
    bool boolean               = false;
 
    switch (cmd)
@@ -2250,6 +2265,7 @@ TODO: Add a setting for these tweaks */
          break;
       case CMD_EVENT_CORE_INFO_DEINIT:
          core_info_deinit_list();
+         core_info_free_current_core();
          break;
       case CMD_EVENT_CORE_INFO_INIT:
          {
@@ -2436,10 +2452,14 @@ TODO: Add a setting for these tweaks */
          if (!command_event_save_core_config())
             return false;
          break;
+      case CMD_EVENT_SHADER_PRESET_LOADED:
+         ui_companion_event_command(cmd);
+         break;
       case CMD_EVENT_SHADERS_APPLY_CHANGES:
 #ifdef HAVE_MENU
          menu_shader_manager_apply_changes();
 #endif
+         ui_companion_event_command(cmd);
          break;
       case CMD_EVENT_PAUSE_CHECKS:
          {
@@ -2869,12 +2889,6 @@ TODO: Add a setting for these tweaks */
          break;
       case CMD_EVENT_RESTORE_DEFAULT_SHADER_PRESET:
          command_event_restore_default_shader_preset();
-         break;
-      case CMD_EVENT_LIBUI_TEST:
-#if HAVE_LIBUI
-         extern int libui_main(void);
-         libui_main();
-#endif
          break;
       case CMD_EVENT_DISCORD_INIT:
 #ifdef HAVE_DISCORD

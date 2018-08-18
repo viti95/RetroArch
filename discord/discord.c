@@ -13,12 +13,15 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "discord.h"
-#include "retroarch.h"
-#include "core.h"
-#include "core_info.h"
-#include "paths.h"
 #include <file/file_path.h>
+
+#include "discord.h"
+
+#include "../retroarch.h"
+#include "../core.h"
+#include "../core_info.h"
+#include "../paths.h"
+#include "../playlist.h"
 
 #include "../msg_hash.h"
 
@@ -71,14 +74,13 @@ static void handle_discord_join_request(const DiscordUser* request)
 
 void discord_update(enum discord_presence presence)
 {
-   rarch_system_info_t *system = runloop_get_system_info();
    core_info_t *core_info    = NULL;
-   core_info_get_current_core(&core_info);
 
    if (!discord_ready)
       return;
+
    if (
-         (discord_status != DISCORD_PRESENCE_MENU) && 
+         (discord_status != DISCORD_PRESENCE_MENU) &&
          (discord_status == presence))
       return;
 
@@ -95,19 +97,32 @@ void discord_update(enum discord_presence presence)
          discord_presence.startTimestamp  = start_time;
          break;
       case DISCORD_PRESENCE_GAME:
+         core_info_get_current_core(&core_info);
+
+         if (core_info)
          {
-            const char *system_name  = string_replace_substring(string_to_lower(core_info->core_name), " ", "_");
+            const char *system_name  = string_replace_substring(
+                  string_to_lower(core_info->core_name), " ", "_");
+
+            char *label = NULL;
+            playlist_t *current_playlist = playlist_get_cached();
+
+            if (current_playlist)
+               playlist_get_index_by_path(
+                  current_playlist, path_get(RARCH_PATH_CONTENT), NULL, &label, NULL, NULL, NULL, NULL);
+
+            if (!label)
+               label = (char *)path_basename(path_get(RARCH_PATH_BASENAME));
 
             start_time                       = time(0);
-            discord_presence.state           = system ? system->info.library_name : "---";
-            discord_presence.details         = path_basename(path_get(RARCH_PATH_BASENAME));
+            discord_presence.state           = core_info->display_name;
+            discord_presence.details         = label;
 #if 1
             RARCH_LOG("[Discord] system name: %s\n", system_name);
+            RARCH_LOG("[Discord] current content: %s\n", label);
 #endif
             discord_presence.largeImageKey   = system_name;
-
             discord_presence.smallImageKey   = "base";
-
             discord_presence.instance        = 0;
             discord_presence.startTimestamp  = start_time;
 

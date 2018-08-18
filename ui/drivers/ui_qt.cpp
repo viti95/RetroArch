@@ -16,6 +16,7 @@
 
 extern "C" {
 #include <file/file_path.h>
+#include <string/stdstring.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../../config.h"
@@ -31,6 +32,8 @@ extern "C" {
 }
 
 #include "ui_qt.h"
+#include "qt/filedropwidget.h"
+#include "qt/viewoptionsdialog.h"
 
 #include <QApplication>
 #include <QtWidgets>
@@ -224,6 +227,10 @@ static void* ui_companion_qt_init(void)
    QMenu *editMenu = NULL;
    QMenu *viewMenu = NULL;
    QMenu *viewClosedDocksMenu = NULL;
+#ifdef Q_OS_WIN
+   QMenu *toolsMenu = NULL;
+   QMenu *updaterMenu = NULL;
+#endif
    QMenu *helpMenu = NULL;
    QRect desktopRect;
    QDockWidget *thumbnailDock = NULL;
@@ -317,12 +324,19 @@ static void* ui_companion_qt_init(void)
 
    QObject::connect(viewClosedDocksMenu, SIGNAL(aboutToShow()), mainwindow, SLOT(onViewClosedDocksAboutToShow()));
 
+   viewMenu->addAction(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_SHADER_OPTIONS), mainwindow, SLOT(onShaderParamsClicked()));
+
    viewMenu->addSeparator();
    viewMenu->addAction(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_VIEW_TYPE_ICONS), mainwindow, SLOT(onIconViewClicked()));
    viewMenu->addAction(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_VIEW_TYPE_LIST), mainwindow, SLOT(onListViewClicked()));
    viewMenu->addSeparator();
    viewMenu->addAction(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_MENU_VIEW_OPTIONS), mainwindow->viewOptionsDialog(), SLOT(showDialog()));
 
+#ifdef Q_OS_WIN
+   toolsMenu = menu->addMenu(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_MENU_TOOLS));
+   updaterMenu = toolsMenu->addMenu(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ONLINE_UPDATER));
+   updaterMenu->addAction(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_UPDATE_RETROARCH_NIGHTLY), mainwindow, SLOT(updateRetroArchNightly()));
+#endif
    helpMenu = menu->addMenu(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_MENU_HELP));
    helpMenu->addAction(QString(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_MENU_HELP_DOCUMENTATION)), mainwindow, SLOT(showDocs()));
    helpMenu->addAction(QString(msg_hash_to_str(MENU_ENUM_LABEL_VALUE_QT_MENU_HELP_ABOUT)) + "...", mainwindow, SLOT(showAbout()));
@@ -612,11 +626,21 @@ static void ui_companion_qt_toggle(void *data, bool force)
 static void ui_companion_qt_event_command(void *data, enum event_command cmd)
 {
    ui_companion_qt_t *handle = (ui_companion_qt_t*)data;
-
-   (void)cmd;
+   ui_window_qt_t *win_handle = (ui_window_qt_t*)handle->window;
 
    if (!handle)
       return;
+
+   switch (cmd)
+   {
+      case CMD_EVENT_SHADERS_APPLY_CHANGES:
+      case CMD_EVENT_SHADER_PRESET_LOADED:
+         RARCH_LOG("[Qt]: Reloading shader parameters.\n");
+         win_handle->qtWindow->deferReloadShaderParams();
+         break;
+      default:
+         break;
+   }
 }
 
 static void ui_companion_qt_notify_list_pushed(void *data, file_list_t *list,
