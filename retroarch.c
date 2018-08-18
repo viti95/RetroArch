@@ -2621,6 +2621,81 @@ static enum runloop_state runloop_check_state(
    }
 #endif
 
+   /* CORRUPTELLA -> RAM */
+   {
+      static bool old_fuck_ram = false;
+      bool fuck_ram = BIT256_GET(current_input, CORRUPTELLA_FUCK_RAM);
+
+      if (current_core_type != CORE_TYPE_DUMMY) {
+         if (fuck_ram && !old_fuck_ram) {
+            RARCH_LOG("[CORRUPTELLA] EXEC CMD FUCK RAM\n");
+            command_event(CMD_EVENT_CORRUPTELLA_FUCK_RAM, NULL);
+         }
+
+         old_fuck_ram = fuck_ram;
+      }
+   }
+
+   /* CORRUPTELLA -> ROM */
+   {
+      static bool old_fuck_rom = false;
+      bool fuck_rom = BIT256_GET(current_input, CORRUPTELLA_FUCK_ROM);
+
+      if (current_core_type != CORE_TYPE_DUMMY) {
+         if (fuck_rom && !old_fuck_rom) {
+            RARCH_LOG("[CORRUPTELLA] EXEC CMD FUCK ROM\n");
+            command_event(CMD_EVENT_CORRUPTELLA_FUCK_ROM, NULL);
+         }
+
+         old_fuck_rom = fuck_rom;
+      }
+   }
+
+   /* CORRUPTELLA -> SOUND */
+   {
+      static bool old_fuck_sound = false;
+      bool fuck_sound = BIT256_GET(current_input, CORRUPTELLA_FUCK_SOUND);
+
+      if (current_core_type != CORE_TYPE_DUMMY) {
+         if (fuck_sound && !old_fuck_sound) {
+            RARCH_LOG("[CORRUPTELLA] EXEC CMD FUCK SOUND\n");
+            command_event(CMD_EVENT_CORRUPTELLA_FUCK_SOUND, NULL);
+         }
+
+         old_fuck_sound = fuck_sound;
+      }
+   }
+
+   /* CORRUPTELLA -> MUSIC */
+   {
+      static bool old_fuck_music = false;
+      bool fuck_music = BIT256_GET(current_input, CORRUPTELLA_FUCK_MUSIC);
+
+      if (current_core_type != CORE_TYPE_DUMMY) {
+         if (fuck_music && !old_fuck_music) {
+            RARCH_LOG("[CORRUPTELLA] EXEC CMD FUCK MUSIC\n");
+            command_event(CMD_EVENT_CORRUPTELLA_FUCK_MUSIC, NULL);
+         }
+
+         old_fuck_music = fuck_music;
+      }
+   }
+
+   /* CORRUPTELLA -> VIDEO */
+   {
+      static bool old_fuck_video = false;
+      bool fuck_video = BIT256_GET(current_input, CORRUPTELLA_FUCK_VIDEO);
+
+      if (current_core_type != CORE_TYPE_DUMMY) {
+         if (fuck_video && !old_fuck_video) {
+            RARCH_LOG("[CORRUPTELLA] EXEC CMD FUCK VIDEO\n");
+            command_event(CMD_EVENT_CORRUPTELLA_FUCK_VIDEO, NULL);
+         }
+
+         old_fuck_video = fuck_video;
+      }
+   }
+
    /* Check quit key */
    {
       static bool old_quit_key = false;

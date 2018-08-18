@@ -2445,6 +2445,13 @@ RETRO_API unsigned retro_get_region(void);
 RETRO_API void *retro_get_memory_data(unsigned id);
 RETRO_API size_t retro_get_memory_size(unsigned id);
 
+/* CORRUPTELLA */
+RETRO_API void corruptella_fuck_ram(void);
+RETRO_API void corruptella_fuck_rom(void);
+RETRO_API void corruptella_fuck_sound(void);
+RETRO_API void corruptella_fuck_music(void);
+RETRO_API void corruptella_fuck_video(void);
+
 #ifdef __cplusplus
 }
 #endif

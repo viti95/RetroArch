@@ -241,6 +241,16 @@ bool core_is_inited(void);
 
 bool core_is_game_loaded(void);
 
+void core_corruptella_fuck_ram(void);
+
+void core_corruptella_fuck_rom(void);
+
+void core_corruptella_fuck_sound(void);
+
+void core_corruptella_fuck_music(void);
+
+void core_corruptella_fuck_video(void);
+
 extern struct retro_callbacks retro_ctx;
 
 RETRO_END_DECLS

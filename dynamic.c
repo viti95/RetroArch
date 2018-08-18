@@ -461,6 +461,13 @@ bool init_libretro_sym_custom(enum rarch_core_type type, struct retro_core_t *cu
          SYMBOL(retro_get_region);
          SYMBOL(retro_get_memory_data);
          SYMBOL(retro_get_memory_size);
+
+         SYMBOL(corruptella_fuck_ram);
+         SYMBOL(corruptella_fuck_rom);
+         SYMBOL(corruptella_fuck_sound);
+         SYMBOL(corruptella_fuck_music);
+         SYMBOL(corruptella_fuck_video);
+
          break;
       case CORE_TYPE_DUMMY:
          SYMBOL_DUMMY(retro_init);
@@ -496,6 +503,7 @@ bool init_libretro_sym_custom(enum rarch_core_type type, struct retro_core_t *cu
          SYMBOL_DUMMY(retro_get_region);
          SYMBOL_DUMMY(retro_get_memory_data);
          SYMBOL_DUMMY(retro_get_memory_size);
+
          break;
       case CORE_TYPE_FFMPEG:
 #ifdef HAVE_FFMPEG

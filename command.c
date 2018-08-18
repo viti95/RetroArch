@@ -188,7 +188,11 @@ static const struct cmd_map map[] = {
    { "MENU_RIGHT",             RETRO_DEVICE_ID_JOYPAD_RIGHT },
    { "MENU_A",                 RETRO_DEVICE_ID_JOYPAD_A },
    { "MENU_B",                 RETRO_DEVICE_ID_JOYPAD_B },
-   { "MENU_B",                 RETRO_DEVICE_ID_JOYPAD_B },
+   { "CORRUPTELLA_FUCK_RAM",   CORRUPTELLA_FUCK_RAM },
+   { "CORRUPTELLA_FUCK_ROM",   CORRUPTELLA_FUCK_ROM },
+   { "CORRUPTELLA_FUCK_SOUND", CORRUPTELLA_FUCK_SOUND },
+   { "CORRUPTELLA_FUCK_MUSIC", CORRUPTELLA_FUCK_MUSIC },
+   { "CORRUPTELLA_FUCK_VIDEO", CORRUPTELLA_FUCK_VIDEO }
 };
 
 static enum cmd_source_t lastcmd_source;
@@ -2906,6 +2910,21 @@ TODO: Add a setting for these tweaks */
             discord_update(userdata->status);
          }
 #endif
+         break;
+      case CMD_EVENT_CORRUPTELLA_FUCK_RAM:
+         core_corruptella_fuck_ram();
+         break;
+      case CMD_EVENT_CORRUPTELLA_FUCK_ROM:
+         core_corruptella_fuck_rom();
+         break;
+      case CMD_EVENT_CORRUPTELLA_FUCK_SOUND:
+         core_corruptella_fuck_sound();
+         break;
+      case CMD_EVENT_CORRUPTELLA_FUCK_MUSIC:
+         core_corruptella_fuck_music();
+         break;
+      case CMD_EVENT_CORRUPTELLA_FUCK_VIDEO:
+         core_corruptella_fuck_video();
          break;
       case CMD_EVENT_NONE:
          return false;

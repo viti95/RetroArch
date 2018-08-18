@@ -109,6 +109,12 @@ struct retro_core_t
    void *(*retro_get_memory_data)(unsigned);
    size_t (*retro_get_memory_size)(unsigned);
 
+   void(*corruptella_fuck_ram)(void);
+   void(*corruptella_fuck_rom)(void);
+   void(*corruptella_fuck_sound)(void);
+   void(*corruptella_fuck_music)(void);
+   void(*corruptella_fuck_video)(void);
+
    unsigned poll_type;
    bool inited;
    bool symbols_inited;

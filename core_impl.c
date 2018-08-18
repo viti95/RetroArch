@@ -525,3 +525,23 @@ bool core_is_game_loaded(void)
 {
   return current_core.game_loaded;
 }
+
+void core_corruptella_fuck_ram(void) {
+   current_core.corruptella_fuck_ram();
+}
+
+void core_corruptella_fuck_rom(void) {
+   current_core.corruptella_fuck_rom();
+}
+
+void core_corruptella_fuck_sound(void) {
+   current_core.corruptella_fuck_sound();
+}
+
+void core_corruptella_fuck_music(void) {
+   current_core.corruptella_fuck_music();
+}
+
+void core_corruptella_fuck_video(void) {
+   current_core.corruptella_fuck_video();
+}
